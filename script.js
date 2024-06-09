@@ -77,7 +77,6 @@ function playRecording() {
     if (events.length === 0) return;
 
     let repetitionCount = 0;
-    const startTime = Date.now();
     const baseTimestamp = events[0].timestamp;
 
     function executeEvent(event) {
@@ -90,25 +89,35 @@ function playRecording() {
         }
     }
 
-    function playEvents() {
-        if (repetitionCount < repetitions) {
-            const currentTimestamp = Date.now();
-            const elapsedTime = currentTimestamp - startTime;
-            const adjustedTimestamp = baseTimestamp + elapsedTime;
+    function playEvents(startTime) {
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - startTime;
 
-            events.forEach(event => {
-                const eventDelay = event.timestamp - baseTimestamp;
-                setTimeout(() => {
-                    executeEvent(event);
-                }, eventDelay);
-            });
-
-            repetitionCount++;
-            setTimeout(playEvents, interval);
-        }
+        events.forEach(event => {
+            const eventTime = event.timestamp - baseTimestamp;
+            if (elapsedTime >= eventTime) {
+                executeEvent(event);
+            }
+        });
     }
 
-    playEvents();
+    function startRepetition() {
+        if (repetitionCount >= repetitions) return;
+        const startTime = Date.now();
+        const intervalId = setInterval(() => {
+            playEvents(startTime);
+        }, 1);
+
+        setTimeout(() => {
+            clearInterval(intervalId);
+            repetitionCount++;
+            if (repetitionCount < repetitions) {
+                setTimeout(startRepetition, interval);
+            }
+        }, events[events.length - 1].timestamp - baseTimestamp);
+    }
+
+    startRepetition();
 }
 
 // Simulate mouse move
