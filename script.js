@@ -1,133 +1,174 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+let isRecording = false;
+let events = [];
+let variables = [];
+let presets = {};
+let repetitions = 1;
+let interval = 0;
+
+const startRecordingBtn = document.getElementById('startRecording');
+const stopRecordingBtn = document.getElementById('stopRecording');
+const resetRecordingBtn = document.getElementById('resetRecording');
+const playRecordingBtn = document.getElementById('playRecording');
+const repetitionsInput = document.getElementById('repetitions');
+const intervalSelect = document.getElementById('interval');
+const customIntervalInput = document.getElementById('customInterval');
+const applySettingsBtn = document.getElementById('applySettings');
+const addVariableBtn = document.getElementById('addVariable');
+const variableList = document.getElementById('variableList');
+const presetSelect = document.getElementById('presetSelect');
+const savePresetBtn = document.getElementById('savePreset');
+const loadPresetBtn = document.getElementById('loadPreset');
+
+function recordEvent(event) {
+    if (isRecording) {
+        const recordedEvent = {
+            type: event.type,
+            timestamp: Date.now(),
+            details: {
+                x: event.clientX,
+                y: event.clientY,
+                key: event.key,
+                keyCode: event.keyCode,
+            }
+        };
+        events.push(recordedEvent);
+    }
 }
 
-header {
-    width: 100%;
-    background-color: #007bff;
-    color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+function startRecording() {
+    isRecording = true;
+    events = [];
+    startRecordingBtn.disabled = true;
+    stopRecordingBtn.disabled = false;
+    resetRecordingBtn.disabled = false;
+    playRecordingBtn.disabled = true;
+    document.addEventListener('mousemove', recordEvent);
+    document.addEventListener('click', recordEvent);
+    document.addEventListener('keydown', recordEvent);
 }
 
-.banner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
+function stopRecording() {
+    isRecording = false;
+    startRecordingBtn.disabled = false;
+    stopRecordingBtn.disabled = true;
+    resetRecordingBtn.disabled = false;
+    playRecordingBtn.disabled = false;
+    document.removeEventListener('mousemove', recordEvent);
+    document.removeEventListener('click', recordEvent);
+    document.removeEventListener('keydown', recordEvent);
 }
 
-.banner h1 {
-    margin: 0;
+function resetRecording() {
+    events = [];
+    startRecordingBtn.disabled = false;
+    stopRecordingBtn.disabled = true;
+    resetRecordingBtn.disabled = true;
+    playRecordingBtn.disabled = true;
 }
 
-nav ul {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
+function playRecording() {
+    if (events.length === 0) return;
+
+    let previousTime = events[0].timestamp;
+    let repetitionCount = 0;
+
+    function executeEvent(event) {
+        if (event.type === 'mousemove') {
+            const simulatedEvent = new MouseEvent('mousemove', {
+                clientX: event.details.x,
+                clientY: event.details.y,
+            });
+            document.dispatchEvent(simulatedEvent);
+        } else if (event.type === 'click') {
+            const simulatedEvent = new MouseEvent('click', {
+                clientX: event.details.x,
+                clientY: event.details.y,
+            });
+            document.dispatchEvent(simulatedEvent);
+        } else if (event.type === 'keydown') {
+            const simulatedEvent = new KeyboardEvent('keydown', {
+                key: event.details.key,
+                keyCode: event.details.keyCode,
+            });
+            document.dispatchEvent(simulatedEvent);
+        }
+    }
+
+    function playEvents() {
+        if (repetitionCount < repetitions) {
+            const startTime = Date.now();
+            for (let event of events) {
+                const delay = event.timestamp - previousTime;
+                setTimeout(() => {
+                    executeEvent(event);
+                }, delay);
+            }
+            repetitionCount++;
+            previousTime = events[0].timestamp + (Date.now() - startTime);
+            setTimeout(playEvents, interval);
+        }
+    }
+
+    playEvents();
 }
 
-nav ul li {
-    margin: 0 10px;
+function applySettings() {
+    repetitions = parseInt(repetitionsInput.value);
+    interval = intervalSelect.value === 'custom' ? parseInt(customIntervalInput.value) : parseInt(intervalSelect.value);
 }
 
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 16px;
+function addVariable() {
+    const variableContainer = document.createElement('div');
+    variableContainer.classList.add('variable');
+    
+    const label = document.createElement('label');
+    label.innerText = `Variable ${variables.length + 1}:`;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.innerText = 'Remove';
+    removeBtn.addEventListener('click', () => {
+        variableList.removeChild(variableContainer);
+        variables = variables.filter(v => v !== input);
+    });
+
+    variableContainer.appendChild(label);
+    variableContainer.appendChild(input);
+    variableContainer.appendChild(removeBtn);
+
+    variableList.appendChild(variableContainer);
+    variables.push(input);
 }
 
-.container {
-    width: 80%;
-    max-width: 1000px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    text-align: center;
+function savePreset() {
+    const presetName = prompt("Enter a name for the preset:");
+    if (presetName) {
+        presets[presetName] = events.slice();
+        const option = document.createElement('option');
+        option.value = presetName;
+        option.text = presetName;
+        presetSelect.add(option);
+    }
 }
 
-h2 {
-    color: #333;
-    margin-bottom: 10px;
+function loadPreset() {
+    const selectedPreset = presetSelect.value;
+    if (presets[selectedPreset]) {
+        events = presets[selectedPreset];
+        playRecordingBtn.disabled = false;
+    }
 }
 
-.controls, .settings, .variables, .presets {
-    margin: 20px 0;
-}
-
-button {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-    background-color: #0056b3;
-}
-
-label {
-    display: block;
-    margin: 10px 0 5px;
-    text-align: left;
-}
-
-input, select {
-    padding: 10px;
-    margin: 5px 0;
-    font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.variables, .presets {
-    text-align: left;
-}
-
-#variableList .variable, .presets select {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px 0;
-}
-
-#variableList .variable input, .presets select {
-    margin: 0 10px;
-    flex-grow: 1;
-}
-
-#variableList .variable button {
-    background-color: #dc3545;
-}
-
-#variableList .variable button:hover {
-    background-color: #c82333;
-}
-
-footer {
-    width: 100%;
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 0;
-    text-align: center;
-    position: fixed;
-    bottom: 0;
-}
+startRecordingBtn.addEventListener('click', startRecording);
+stopRecordingBtn.addEventListener('click', stopRecording);
+resetRecordingBtn.addEventListener('click', resetRecording);
+playRecordingBtn.addEventListener('click', playRecording);
+applySettingsBtn.addEventListener('click', applySettings);
+intervalSelect.addEventListener('change', () => {
+    customIntervalInput.style.display = intervalSelect.value === 'custom' ? 'inline' : 'none';
+});
+addVariableBtn.addEventListener('click', addVariable);
+savePresetBtn.addEventListener('click', savePreset);
+loadPresetBtn.addEventListener('click', loadPreset);
