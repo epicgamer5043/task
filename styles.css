@@ -3,23 +3,29 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .container {
-    max-width: 800px;
-    margin: 50px auto;
+    width: 80%;
+    max-width: 1000px;
+    margin: 20px auto;
     padding: 20px;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 
 h1 {
     text-align: center;
     color: #333;
+    margin-bottom: 20px;
 }
 
-.controls, .settings, .variables, .events {
+.controls, .settings, .variables, .presets {
     margin: 20px 0;
     text-align: center;
 }
@@ -33,10 +39,12 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 button:disabled {
     background-color: #ccc;
+    cursor: not-allowed;
 }
 
 button:hover:not(:disabled) {
@@ -46,23 +54,31 @@ button:hover:not(:disabled) {
 label {
     display: block;
     margin: 10px 0 5px;
+    text-align: left;
 }
 
 input, select {
     padding: 10px;
-    margin: 5px;
+    margin: 5px 0;
     font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-#variableList .variable {
+.variables, .presets {
+    text-align: left;
+}
+
+#variableList .variable, .presets select {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 10px 0;
 }
 
-#variableList .variable input {
+#variableList .variable input, .presets select {
     margin: 0 10px;
+    flex-grow: 1;
 }
 
 #variableList .variable button {
@@ -73,24 +89,8 @@ input, select {
     background-color: #c82333;
 }
 
-.events {
-    text-align: left;
-    margin-top: 20px;
-}
-
-#eventList {
-    list-style-type: none;
-    padding: 0;
-}
-
-#eventList li {
-    padding: 5px;
-    background-color: #f9f9f9;
-    margin-bottom: 5px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-button {
-    transition: background-color 0.3s ease;
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
 }
