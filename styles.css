@@ -1,0 +1,74 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.controls, .settings, .variables {
+    margin: 20px 0;
+    text-align: center;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:disabled {
+    background-color: #ccc;
+}
+
+button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input, select {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+#variableList .variable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+#variableList .variable input {
+    margin: 0 10px;
+}
+
+#variableList .variable button {
+    background-color: #dc3545;
+}
+
+#variableList .variable button:hover {
+    background-color: #c82333;
+}
