@@ -1,11 +1,13 @@
 let isRecording = false;
 let events = [];
 let variables = [];
+let presets = {};
 let repetitions = 1;
 let interval = 0;
 
 const startRecordingBtn = document.getElementById('startRecording');
 const stopRecordingBtn = document.getElementById('stopRecording');
+const resetRecordingBtn = document.getElementById('resetRecording');
 const playRecordingBtn = document.getElementById('playRecording');
 const repetitionsInput = document.getElementById('repetitions');
 const intervalSelect = document.getElementById('interval');
@@ -13,7 +15,9 @@ const customIntervalInput = document.getElementById('customInterval');
 const applySettingsBtn = document.getElementById('applySettings');
 const addVariableBtn = document.getElementById('addVariable');
 const variableList = document.getElementById('variableList');
-const eventList = document.getElementById('eventList');
+const presetSelect = document.getElementById('presetSelect');
+const savePresetBtn = document.getElementById('savePreset');
+const loadPresetBtn = document.getElementById('loadPreset');
 
 function recordEvent(event) {
     if (isRecording) {
@@ -28,22 +32,15 @@ function recordEvent(event) {
             }
         };
         events.push(recordedEvent);
-        displayEvent(recordedEvent);
     }
-}
-
-function displayEvent(event) {
-    const eventItem = document.createElement('li');
-    eventItem.innerText = `${event.type} at (${event.details.x}, ${event.details.y}) ${event.details.key ? `Key: ${event.details.key}` : ''}`;
-    eventList.appendChild(eventItem);
 }
 
 function startRecording() {
     isRecording = true;
     events = [];
-    eventList.innerHTML = '';
     startRecordingBtn.disabled = true;
     stopRecordingBtn.disabled = false;
+    resetRecordingBtn.disabled = false;
     playRecordingBtn.disabled = true;
     document.addEventListener('mousemove', recordEvent);
     document.addEventListener('click', recordEvent);
@@ -54,10 +51,19 @@ function stopRecording() {
     isRecording = false;
     startRecordingBtn.disabled = false;
     stopRecordingBtn.disabled = true;
+    resetRecordingBtn.disabled = false;
     playRecordingBtn.disabled = false;
     document.removeEventListener('mousemove', recordEvent);
     document.removeEventListener('click', recordEvent);
     document.removeEventListener('keydown', recordEvent);
+}
+
+function resetRecording() {
+    events = [];
+    startRecordingBtn.disabled = false;
+    stopRecordingBtn.disabled = true;
+    resetRecordingBtn.disabled = true;
+    playRecordingBtn.disabled = true;
 }
 
 function playRecording() {
@@ -67,17 +73,7 @@ function playRecording() {
     let repetitionCount = 0;
 
     function executeEvent(event) {
-        switch (event.type) {
-            case 'mousemove':
-                simulateMouseMove(event.details.x, event.details.y);
-                break;
-            case 'click':
-                simulateMouseClick(event.details.x, event.details.y);
-                break;
-            case 'keydown':
-                simulateKeyPress(event.details.key);
-                break;
-        }
+        console.log(event);  // Placeholder for event execution
     }
 
     function playEvents() {
@@ -96,27 +92,6 @@ function playRecording() {
     }
 
     playEvents();
-}
-
-function simulateMouseMove(x, y) {
-    const mouseMoveEvent = new MouseEvent('mousemove', {
-        clientX: x,
-        clientY: y
-    });
-    document.dispatchEvent(mouseMoveEvent);
-}
-
-function simulateMouseClick(x, y) {
-    const clickEvent = new MouseEvent('click', {
-        clientX: x,
-        clientY: y
-    });
-    document.dispatchEvent(clickEvent);
-}
-
-function simulateKeyPress(key) {
-    const keyEvent = new KeyboardEvent('keydown', { key: key });
-    document.dispatchEvent(keyEvent);
 }
 
 function applySettings() {
@@ -149,11 +124,33 @@ function addVariable() {
     variables.push(input);
 }
 
+function savePreset() {
+    const presetName = prompt("Enter a name for the preset:");
+    if (presetName) {
+        presets[presetName] = events.slice();
+        const option = document.createElement('option');
+        option.value = presetName;
+        option.text = presetName;
+        presetSelect.add(option);
+    }
+}
+
+function loadPreset() {
+    const selectedPreset = presetSelect.value;
+    if (presets[selectedPreset]) {
+        events = presets[selectedPreset];
+        playRecordingBtn.disabled = false;
+    }
+}
+
 startRecordingBtn.addEventListener('click', startRecording);
 stopRecordingBtn.addEventListener('click', stopRecording);
+resetRecordingBtn.addEventListener('click', resetRecording);
 playRecordingBtn.addEventListener('click', playRecording);
 applySettingsBtn.addEventListener('click', applySettings);
 intervalSelect.addEventListener('change', () => {
     customIntervalInput.style.display = intervalSelect.value === 'custom' ? 'inline' : 'none';
 });
 addVariableBtn.addEventListener('click', addVariable);
+savePresetBtn.addEventListener('click', savePreset);
+loadPresetBtn.addEventListener('click', loadPreset);
