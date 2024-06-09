@@ -19,7 +19,7 @@ h1 {
     color: #333;
 }
 
-.controls, .settings, .variables {
+.controls, .settings, .variables, .events {
     margin: 20px 0;
     text-align: center;
 }
@@ -71,4 +71,26 @@ input, select {
 
 #variableList .variable button:hover {
     background-color: #c82333;
+}
+
+.events {
+    text-align: left;
+    margin-top: 20px;
+}
+
+#eventList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#eventList li {
+    padding: 5px;
+    background-color: #f9f9f9;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    transition: background-color 0.3s ease;
 }
