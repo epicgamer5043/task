@@ -1,3 +1,4 @@
+<script>
 let isRecording = false;
 let events = [];
 let variables = [];
@@ -73,20 +74,21 @@ function playRecording() {
     let repetitionCount = 0;
 
     function executeEvent(event) {
+        let simulatedEvent;
         if (event.type === 'mousemove') {
-            const simulatedEvent = new MouseEvent('mousemove', {
+            simulatedEvent = new MouseEvent('mousemove', {
                 clientX: event.details.x,
                 clientY: event.details.y,
             });
             document.dispatchEvent(simulatedEvent);
         } else if (event.type === 'click') {
-            const simulatedEvent = new MouseEvent('click', {
+            simulatedEvent = new MouseEvent('click', {
                 clientX: event.details.x,
                 clientY: event.details.y,
             });
             document.dispatchEvent(simulatedEvent);
         } else if (event.type === 'keydown') {
-            const simulatedEvent = new KeyboardEvent('keydown', {
+            simulatedEvent = new KeyboardEvent('keydown', {
                 key: event.details.key,
                 keyCode: event.details.keyCode,
             });
@@ -94,22 +96,28 @@ function playRecording() {
         }
     }
 
-    function playEvents() {
-        if (repetitionCount < repetitions) {
-            const startTime = Date.now();
-            for (let event of events) {
-                const delay = event.timestamp - previousTime;
+    function playNextEvent(index) {
+        if (index < events.length) {
+            const event = events[index];
+            const delay = event.timestamp - previousTime;
+            previousTime = event.timestamp;
+
+            setTimeout(() => {
+                executeEvent(event);
+                playNextEvent(index + 1);
+            }, delay);
+        } else {
+            repetitionCount += 1;
+            if (repetitionCount < repetitions) {
                 setTimeout(() => {
-                    executeEvent(event);
-                }, delay);
+                    previousTime = events[0].timestamp;
+                    playNextEvent(0);
+                }, interval);
             }
-            repetitionCount++;
-            previousTime = events[0].timestamp + (Date.now() - startTime);
-            setTimeout(playEvents, interval);
         }
     }
 
-    playEvents();
+    playNextEvent(0);
 }
 
 function applySettings() {
@@ -118,46 +126,62 @@ function applySettings() {
 }
 
 function addVariable() {
-    const variableContainer = document.createElement('div');
-    variableContainer.classList.add('variable');
-    
-    const label = document.createElement('label');
-    label.innerText = `Variable ${variables.length + 1}:`;
+    const variable = {
+        name: `Variable ${variables.length + 1}`,
+        value: '',
+    };
+    variables.push(variable);
 
-    const input = document.createElement('input');
-    input.type = 'text';
+    const variableElement = document.createElement('div');
+    variableElement.className = 'variable';
+    variableElement.innerHTML = `
+        <label>${variable.name}</label>
+        <input type="text" value="${variable.value}" oninput="updateVariableValue(${variables.length - 1}, this.value)">
+        <button onclick="removeVariable(${variables.length - 1}, this)">Remove</button>
+    `;
+    variableList.appendChild(variableElement);
+}
 
-    const removeBtn = document.createElement('button');
-    removeBtn.innerText = 'Remove';
-    removeBtn.addEventListener('click', () => {
-        variableList.removeChild(variableContainer);
-        variables = variables.filter(v => v !== input);
-    });
+function updateVariableValue(index, value) {
+    variables[index].value = value;
+}
 
-    variableContainer.appendChild(label);
-    variableContainer.appendChild(input);
-    variableContainer.appendChild(removeBtn);
-
-    variableList.appendChild(variableContainer);
-    variables.push(input);
+function removeVariable(index, button) {
+    variables.splice(index, 1);
+    button.parentElement.remove();
 }
 
 function savePreset() {
-    const presetName = prompt("Enter a name for the preset:");
+    const presetName = prompt('Enter a name for this preset:');
     if (presetName) {
-        presets[presetName] = events.slice();
+        presets[presetName] = {
+            events: JSON.parse(JSON.stringify(events)),
+            variables: JSON.parse(JSON.stringify(variables)),
+        };
         const option = document.createElement('option');
         option.value = presetName;
-        option.text = presetName;
-        presetSelect.add(option);
+        option.textContent = presetName;
+        presetSelect.appendChild(option);
     }
 }
 
 function loadPreset() {
-    const selectedPreset = presetSelect.value;
-    if (presets[selectedPreset]) {
-        events = presets[selectedPreset];
-        playRecordingBtn.disabled = false;
+    const presetName = presetSelect.value;
+    if (presetName && presets[presetName]) {
+        events = JSON.parse(JSON.stringify(presets[presetName].events));
+        variables = JSON.parse(JSON.stringify(presets[presetName].variables));
+
+        variableList.innerHTML = '';
+        variables.forEach((variable, index) => {
+            const variableElement = document.createElement('div');
+            variableElement.className = 'variable';
+            variableElement.innerHTML = `
+                <label>${variable.name}</label>
+                <input type="text" value="${variable.value}" oninput="updateVariableValue(${index}, this.value)">
+                <button onclick="removeVariable(${index}, this)">Remove</button>
+            `;
+            variableList.appendChild(variableElement);
+        });
     }
 }
 
@@ -166,9 +190,11 @@ stopRecordingBtn.addEventListener('click', stopRecording);
 resetRecordingBtn.addEventListener('click', resetRecording);
 playRecordingBtn.addEventListener('click', playRecording);
 applySettingsBtn.addEventListener('click', applySettings);
-intervalSelect.addEventListener('change', () => {
-    customIntervalInput.style.display = intervalSelect.value === 'custom' ? 'inline' : 'none';
-});
 addVariableBtn.addEventListener('click', addVariable);
 savePresetBtn.addEventListener('click', savePreset);
 loadPresetBtn.addEventListener('click', loadPreset);
+
+intervalSelect.addEventListener('change', () => {
+    customIntervalInput.style.display = intervalSelect.value === 'custom' ? 'block' : 'none';
+});
+</script>
