@@ -5,66 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Recorder and Repeater</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="banner">
-            <h1>Task Recorder and Repeater</h1>
-            <nav>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Features</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </nav>
+    <div class="container">
+        <h1>Task Recorder and Repeater</h1>
+        
+        <!-- Control Section -->
+        <div class="controls">
+            <button id="startRecording"><i class="fas fa-record-vinyl"></i> Start Recording</button>
+            <button id="stopRecording" disabled><i class="fas fa-stop"></i> Stop Recording</button>
+            <button id="resetRecording" disabled><i class="fas fa-redo"></i> Reset Recording</button>
+            <button id="playRecording" disabled><i class="fas fa-play"></i> Play Recording</button>
         </div>
-    </header>
-    <main>
-        <div class="container">
-            <section class="controls">
-                <h2>Controls</h2>
-                <button id="startRecording">Start Recording</button>
-                <button id="stopRecording" disabled>Stop Recording</button>
-                <button id="resetRecording" disabled>Reset Recording</button>
-                <button id="playRecording" disabled>Play Recording</button>
-            </section>
-            <section class="settings">
-                <h2>Settings</h2>
-                <label for="repetitions">Number of Repetitions:</label>
-                <input type="number" id="repetitions" min="1" value="1">
-                <label for="interval">Interval Between Repetitions:</label>
-                <select id="interval">
-                    <option value="0">Immediately</option>
-                    <option value="1000">1 Second</option>
-                    <option value="60000">1 Minute</option>
-                    <option value="3600000">1 Hour</option>
-                    <option value="86400000">1 Day</option>
-                    <option value="custom">Custom</option>
-                </select>
-                <input type="number" id="customInterval" min="1" style="display:none;" placeholder="Enter custom interval (ms)">
-                <button id="applySettings">Apply Settings</button>
-            </section>
-            <section class="variables">
-                <h2>Variables</h2>
-                <p>Add variables to change between repetitions:</p>
-                <button id="addVariable">Add Variable</button>
-                <div id="variableList"></div>
-            </section>
-            <section class="presets">
-                <h2>Presets</h2>
-                <p>Select a preset recording:</p>
-                <select id="presetSelect">
-                    <option value="default">Select a preset</option>
-                </select>
-                <button id="savePreset">Save Current Recording as Preset</button>
-                <button id="loadPreset">Load Selected Preset</button>
-            </section>
+        
+        <!-- Settings Section -->
+        <div class="settings">
+            <h2>Settings</h2>
+            <label for="repetitions">Number of Repetitions:</label>
+            <input type="number" id="repetitions" min="1" value="1">
+            
+            <label for="interval">Interval Between Repetitions:</label>
+            <select id="interval">
+                <option value="0">Immediately</option>
+                <option value="1000">1 Second</option>
+                <option value="60000">1 Minute</option>
+                <option value="3600000">1 Hour</option>
+                <option value="86400000">1 Day</option>
+                <option value="custom">Custom</option>
+            </select>
+            <input type="number" id="customInterval" min="1" style="display:none;" placeholder="Enter custom interval (ms)">
+            <button id="applySettings"><i class="fas fa-check"></i> Apply Settings</button>
         </div>
-    </main>
-    <footer>
-        <p>&copy; 2024 Task Recorder and Repeater. All rights reserved.</p>
-    </footer>
+        
+        <!-- Variables Section -->
+        <div class="variables">
+            <h2>Variables</h2>
+            <p>Add variables to change between repetitions:</p>
+            <button id="addVariable"><i class="fas fa-plus"></i> Add Variable</button>
+            <div id="variableList"></div>
+        </div>
+        
+        <!-- Presets Section -->
+        <div class="presets">
+            <h2>Presets</h2>
+            <p>Select a preset recording:</p>
+            <select id="presetSelect">
+                <option value="default">Select a preset</option>
+            </select>
+            <button id="savePreset"><i class="fas fa-save"></i> Save Current Recording as Preset</button>
+            <button id="loadPreset"><i class="fas fa-folder-open"></i> Load Selected Preset</button>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
