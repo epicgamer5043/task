@@ -7,8 +7,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header>
+        <div class="banner">
+            <h1>Task Recorder and Repeater</h1>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
     <div class="container">
-        <h1>Task Recorder and Repeater</h1>
+        <h2>Control Panel</h2>
         <div class="controls">
             <button id="startRecording">Start Recording</button>
             <button id="stopRecording" disabled>Stop Recording</button>
@@ -16,6 +29,7 @@
             <button id="playRecording" disabled>Play Recording</button>
         </div>
         <div class="settings">
+            <h2>Settings</h2>
             <label for="repetitions">Number of Repetitions:</label>
             <input type="number" id="repetitions" min="1" value="1">
             <label for="interval">Interval Between Repetitions:</label>
@@ -46,6 +60,9 @@
             <button id="loadPreset">Load Selected Preset</button>
         </div>
     </div>
+    <footer>
+        <p>© 2024 Task Recorder and Repeater. All Rights Reserved.</p>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>
