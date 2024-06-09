@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Recorder and Repeater</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Task Recorder and Repeater</h1>
+        <div class="controls">
+            <button id="startRecording">Start Recording</button>
+            <button id="stopRecording" disabled>Stop Recording</button>
+            <button id="playRecording" disabled>Play Recording</button>
+        </div>
+        <div class="settings">
+            <label for="repetitions">Number of Repetitions:</label>
+            <input type="number" id="repetitions" min="1" value="1">
+            <label for="interval">Interval Between Repetitions:</label>
+            <select id="interval">
+                <option value="0">Immediately</option>
+                <option value="1000">1 Second</option>
+                <option value="60000">1 Minute</option>
+                <option value="3600000">1 Hour</option>
+                <option value="86400000">1 Day</option>
+                <option value="custom">Custom</option>
+            </select>
+            <input type="number" id="customInterval" min="1" style="display:none;" placeholder="Enter custom interval (ms)">
+            <button id="applySettings">Apply Settings</button>
+        </div>
+        <div class="variables">
+            <h2>Variables</h2>
+            <p>Add variables to change between repetitions:</p>
+            <button id="addVariable">Add Variable</button>
+            <div id="variableList"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
